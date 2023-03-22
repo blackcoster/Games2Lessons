@@ -18,6 +18,24 @@ def load_texture_pair(filename):
         arcade.load_texture(filename),
         arcade.load_texture(filename,flipped_horizontally=True)
     ]
+class NPC(arcade.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.current_texture = 0
+        self.scale = 1
+        main_path = 'resources/person'
+        self.ded_texture = []
+        for i in range(1,9):
+            texture = load_texture_pair(f'{main_path}/oldman-idle/oldman-idle-{i}.png')
+            self.ded_texture.append(texture)
+        self.texture = self.ded_texture[0][1]
+
+    def update_animation(self, delta_time: float = 1 / 60):
+        self.current_texture+=0.25
+        if self.current_texture%2==0:
+            self.current_texture =0
+
+        self.texture = self.ded_texture[int(self.current_texture)][1]
 
 class Person(arcade.Sprite):
     def __init__(self):
@@ -26,12 +44,19 @@ class Person(arcade.Sprite):
         self.current_texture = 0
         self.scale = 1
         main_path = 'resources/person'
-        self.stay_texture_pair = load_texture_pair(f'{main_path}/bearded-idle/bearded-idle-1.png')
+        self.does_he_stand = True
+
+        self.stand_textures = []
+        for i in range(1,6):
+            texture = load_texture_pair(f'{main_path}/bearded-idle/bearded-idle-{i}.png')
+            self.stand_textures.append(texture)
+
         self.run_textures = []
         for i in range(1,7):
             texture = load_texture_pair(f'{main_path}/bearded-walk/bearded-walk-{i}.png')
             self.run_textures.append(texture)
-        self.texture = self.stay_texture_pair[0]
+
+        self.texture = self.stand_textures[0][0]
 
     def update_animation(self, delta_time: float = 1 / 60):
         if self.change_x<0 and self.person_face_direction ==RIGHT_FACING:
@@ -40,17 +65,23 @@ class Person(arcade.Sprite):
         elif self.change_x>0 and self.person_face_direction ==LEFT_FACING:
             self.person_face_direction = RIGHT_FACING
 
-
         if self.change_x == 0:
-            self.texture = self.stay_texture_pair[self.person_face_direction]
-            return
-
-        self.current_texture+=1
-        if self.current_texture>=6:
-            self.current_texture=0
-
-
-        self.texture = self.run_textures[self.current_texture][self.person_face_direction]
+            self.current_texture += 0.5
+            if self.current_texture % 2 == 0:
+                self.texture = self.stand_textures[0][self.person_face_direction]
+                if self.current_texture >= 5:
+                    self.current_texture = 0
+                self.texture = self.stand_textures[int(self.current_texture)][
+                    self.person_face_direction
+                ]
+        if not self.does_he_stand:
+            self.current_texture = int(self.current_texture)
+            self.current_texture += 1
+            if self.current_texture >= 6:
+                self.current_texture = 0
+            self.texture = self.run_textures[self.current_texture][
+                self.person_face_direction
+            ]
 
 
 class Game(arcade.Window):
@@ -87,6 +118,10 @@ class Game(arcade.Window):
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.player,gravity_constant=GRAVITY,walls = self.ground_list)
 
+        self.npc = NPC()
+        self.npc.center_x = 150
+        self.npc.bottom = self.ground_list[0].top
+
     def on_draw(self):
         self.clear()
         arcade.draw_lrwh_rectangle_textured(0,0,SCREEN_WIDTH,SCREEN_HEIGHT,self.bg_layer1)
@@ -94,24 +129,30 @@ class Game(arcade.Window):
         self.ground_list.draw()
         self.house_list.draw()
         self.player.draw()
+        self.npc.draw()
 
     def on_update(self, delta_time: float):
         self.physics_engine.update()
         self.player.update_animation()
+        self.npc.update_animation()
 
     def on_key_press(self, key: int, modifiers: int):
         if key==arcade.key.LEFT:
             self.player.change_x = -PLAYER_MOVEMENT_SPEED
+            self.player.does_he_stand = False
 
         elif key==arcade.key.RIGHT:
             self.player.change_x = PLAYER_MOVEMENT_SPEED
+            self.player.does_he_stand = False
 
     def on_key_release(self, key: int, modifiers: int):
         if key == arcade.key.LEFT:
             self.player.change_x = 0
+            self.player.does_he_stand = True
 
         elif key == arcade.key.RIGHT:
             self.player.change_x = 0
+            self.player.does_he_stand = True
 
 
 game = Game()
