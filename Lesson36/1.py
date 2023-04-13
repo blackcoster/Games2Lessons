@@ -24,6 +24,8 @@ class Burst:
 
 
 class MyWindow(arcade.Window):
+    # def on_show(self):
+    #     self.set_viewport(0,self.window.width,0,self.window.height)
     def __init__(self):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
         self.burst_list = []
