@@ -10,7 +10,7 @@ pygame.mixer.init()
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT), WINDOW_SURFACE)
 pygame.display.set_caption("Движение машины")
 
-road_image = road_image = pygame.image.load('road_texture.png')
+road_image = road_image = pygame.image.load('road.png')
 background = pygame.transform.smoothscale(road_image, (WINDOW_WIDTH, WINDOW_HEIGHT))
 
 
@@ -77,7 +77,7 @@ class Wall(pygame.sprite.Sprite):
        self.rect.center = (150, 100)
 
 
-car_image = pygame.image.load('car_128.png').convert_alpha()
+car_image = pygame.image.load('car.png').convert_alpha()
 black_car = CarSprite(car_image, WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
 car_sprites = pygame.sprite.Group()
 car_sprites.add(black_car)
