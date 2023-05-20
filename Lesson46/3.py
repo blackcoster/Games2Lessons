@@ -50,6 +50,7 @@ class Button:
                     running = False
                     self.pressed = False
         else:
+
             self.dynamic_elevation = self.elevation
             self.color = '#475F77'
 button1 = Button('Нажми на меня',200,40,(150,250),6)

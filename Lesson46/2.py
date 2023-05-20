@@ -4,7 +4,6 @@ from pygame.locals import *
 pygame.init()
 
 clock = pygame.time.Clock()
-
 screen = pygame.display.set_mode((500,500))
 
 font = pygame.font.SysFont(None,40)
